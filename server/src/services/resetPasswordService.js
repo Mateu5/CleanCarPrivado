@@ -1,37 +1,61 @@
-let con = require('../../banco-de-dados/conexao');
-const { Sequelize, Op } = require('sequelize');
-const { DateTime } = require('luxon');
-const { RecoverCode } = require('../models/password_recover_code');
+const nodemailer = require('nodemailer');
+const { conexao } = require('../banco-de-dados/connection');
 
-const resetPasswordService = async(code, email, password) => {
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: '',
+        pass: ''
+    },
+    tls: {
+        rejectUnauthorized: false // Desabilita a verificação do certificado SSL/TLS
+    }
+})
 
-    try{
-        const { RecoverCode } = require('../models/password_recover_code');
-        const { Op } = require('sequelize');
+const resetSenha = async function (req, res) {
 
-        const codeExists = await RecoverCode.findOne({
-            where: {
-                code: code,
-                email: email,
+    const emailRec = req.body.email;
+
+    [ resultado, meta ] = await conexao.query("select * from usuarios where email = :email", {
+        replacements: {
+            email: emailRec
+        }
+    });
+
+    console.log(req.body.email);
+
+    if(emailRec != null){
+        console.log('entrou')
+        const codigoRecuperacao = Math.floor(Math.random() * 1000000);
+
+        [ resultado, meta ] = await conexao.query("UPDATE usuarios SET codigo_recuperacao = :codigo where email = :email", {
+            replacements: {
+                codigo: codigoRecuperacao,
+                email: emailRec
             }
         });
 
-        if(codeExists === null ){
-            throw new Error('o código informado é invalido ou expirou.');
+        const mailOptions = {
+            from: 'mateus.ieq32@gmail.com',
+            to: emailRec,
+            subject: 'Recuperação de Senha',
+            text: `Seu código de recuperação de senha é: ${codigoRecuperacao}`
         }
 
-        let result = await con.query("sp_atualiza_senha :email, :senha", {
-            replacements: {
-                email: email,
-                senha: password
-            },
-            type: Sequelize.QueryTypes.UPDATE
-        });
-        }catch (error) {
-            throw error;
-        }
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email enviado: ' + info.response);
+            }
+          });
+
+          res.send('Um e-mail com o código de recuperação foi enviado para o seu endereço de e-mail.');
+    }else{
+        res.status(404).send('Email não encontrado');
+    }
 }
 
 module.exports = {
-    resetPasswordService
+    resetSenha: resetSenha,
 }

@@ -2,6 +2,8 @@ const express = require('express');
 const { conexao, User } = require('./src/banco-de-dados/connection');
 const passport = require('passport');
 const session = require('express-session');
+const nodemailer = require('nodemailer');
+
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 require('dotenv').config()
 
@@ -11,11 +13,12 @@ require('dotenv').config()
 
 const { register } = require('./src/controller/RegisterController');
 const { login } = require('./src/controller/LoginController');
+const { resetSenha } = require('./src/services/resetPasswordService');
 
 const app = express();
 
 app.use( express.json() );
-
+//app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   secret: 'mysecret',
   resave: false,
@@ -79,6 +82,7 @@ app.get('/auth/google/failure',isLoggedIn,(req,res)=>{
 
 app.post("/register", register);
 app.post("/login", login);
+app.post("/resetPassword", resetSenha);
 
 
 

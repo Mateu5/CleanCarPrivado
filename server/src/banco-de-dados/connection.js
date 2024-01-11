@@ -28,7 +28,11 @@ Usuario.init({
   },
   cep:{
     type: DataTypes.INTEGER,
-    allowNull: false
+
+  },
+  codigo_recuperacao: {
+    type: DataTypes.INTEGER,
+
   }
   },{
   sequelize: conexao,
