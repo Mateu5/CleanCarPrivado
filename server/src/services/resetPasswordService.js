@@ -1,12 +1,12 @@
 const nodemailer = require('nodemailer');
 const { conexao } = require('../banco-de-dados/connection');
 
-//cria um servico de tranporte
+//cria um servico de transporte
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: '',
-        pass: ''
+        user: 'mateus.ieq32@gmail.com',
+        pass: 'tlzf paiw bpkd vpde'
     },
     tls: {
         rejectUnauthorized: false // Desabilita a verificação do certificado SSL/TLS
@@ -60,6 +60,35 @@ const resetSenha = async function (req, res) {
     }
 }
 
+const conferenceCode = async function (req, res) {
+    const code = req.body.code;
+    const emailRec = req.body.email;
+
+    [ codeData, meta ] = await conexao.query("SELECT codigo_recuperacao FROM usuarios where email = :email", {
+        replacements: {
+            email: emailRec,
+        }
+    })
+    
+    const codeDB = codeData[0].codigo_recuperacao
+    console.log(codeDB)
+    console.log(code);
+
+    try {
+        if( code == codeDB ){
+            console.log("recuperação bem sucedida");
+        }else{
+            console.log("não conseguiu");
+        }
+    } catch (error) {
+        console.log(err)
+    }
+    
+
+}
+
+
 module.exports = {
     resetSenha: resetSenha,
+    conferenceCode: conferenceCode,
 }

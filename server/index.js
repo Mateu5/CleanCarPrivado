@@ -13,7 +13,7 @@ require('dotenv').config()
 
 const { register } = require('./src/controller/RegisterController');
 const { login } = require('./src/controller/LoginController');
-const { resetSenha } = require('./src/services/resetPasswordService');
+const { resetSenha, conferenceCode } = require('./src/services/resetPasswordService');
 
 const app = express();
 
@@ -83,6 +83,7 @@ app.get('/auth/google/failure',isLoggedIn,(req,res)=>{
 app.post("/register", register);
 app.post("/login", login);
 app.post("/resetPassword", resetSenha);
+app.post("/confereCode", conferenceCode)
 
 
 
