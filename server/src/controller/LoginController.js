@@ -1,5 +1,8 @@
 const { Usuario } = require('../banco-de-dados/connection');
 const { Validator } = require('node-input-validator');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const config = require('../../config/app.js');
 //const bcrypt = require('bcrypt');
 
 const login = async function(requisicao, resposta){
@@ -42,7 +45,16 @@ const login = async function(requisicao, resposta){
         })
     }
 
-    resposta.json( usuario );
+    const obj = {
+        "sub" : usuario.senha,
+        "id" : usuario.id
+    }
+
+    const token = jwt.sign(obj, config.jwt_secret, {expiresIn : '5h'});
+
+    resposta.json( { token : token } );
+
+    //resposta.json( usuario );
 }
 
 module.exports = {

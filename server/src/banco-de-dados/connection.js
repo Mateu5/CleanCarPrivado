@@ -30,10 +30,6 @@ Usuario.init({
     type: DataTypes.INTEGER,
 
   },
-  codigo_recuperacao: {
-    type: DataTypes.INTEGER,
-
-  }
   },{
   sequelize: conexao,
   tableName: 'usuarios', 

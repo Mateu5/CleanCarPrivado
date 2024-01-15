@@ -28,7 +28,7 @@ const resetSenha = async function (req, res) {
     console.log(emailRec);
     //verica se o email não é nulo antes de gerar o código de verificação
     if(emailRec != null){
-        console.log('entrou')
+        /*console.log('entrou')
         //cria um código de verificação aleatório com o Math do javaScript (precisa mudar a maneira de gerar o código)
         const codigoRecuperacao = Math.floor(Math.random() * 1000000);
         //da um UPDATE no banco com o Código de verificação (futuramente precisa criar uma table propia no banco)
@@ -37,13 +37,13 @@ const resetSenha = async function (req, res) {
                 codigo: codigoRecuperacao,
                 email: emailRec
             }
-        });
+        });*/
         
         const mailOptions = {
             from: 'mateus.ieq32@gmail.com',//remetente
             to: emailRec,//quem vai receber o código
             subject: 'Recuperação de Senha',
-            text: `Seu código de recuperação de senha é: ${codigoRecuperacao}`
+            text: `link para recuperar senha: http://localhost:5173/esqueciSenha`
         }
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -82,9 +82,7 @@ const conferenceCode = async function (req, res) {
         }
     } catch (error) {
         console.log(err)
-    }
-    
-
+    }   
 }
 
 

@@ -3,22 +3,42 @@ const { conexao, User } = require('./src/banco-de-dados/connection');
 const passport = require('passport');
 const session = require('express-session');
 const nodemailer = require('nodemailer');
-
+const jwt = require('jsonwebtoken');
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 require('dotenv').config()
 
-//const config = require('./app.js');
 
-//const { criar, login } = require('./src/controller/usuario')
+
 
 const { register } = require('./src/controller/RegisterController');
 const { login } = require('./src/controller/LoginController');
 const { resetSenha, conferenceCode } = require('./src/services/resetPasswordService');
 
 const app = express();
-
+const config = require('./config/app.js');
 app.use( express.json() );
-//app.use(bodyParser.urlencoded({ extended: true }));
+
+
+const middlewareAuthentication = function(req, res, next){
+
+  const token = req.header.authorization;
+
+  if(!token){
+    return res.status(401).json({ mensagem: "Token ausente"});
+  }
+
+  const passwordToken = config.jwt_secret;
+
+  jwt.verify( token, passwordToken, (err, decode) => {
+    if(err){
+      return res.status(401).json({ mensagem: "Token invalid"});
+    }else{
+      console.log( decode );
+      return next();
+    }
+  })
+}
+
 app.use(session({
   secret: 'mysecret',
   resave: false,
@@ -84,6 +104,12 @@ app.post("/register", register);
 app.post("/login", login);
 app.post("/resetPassword", resetSenha);
 app.post("/confereCode", conferenceCode)
+
+
+
+
+
+
 
 
 

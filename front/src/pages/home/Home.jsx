@@ -1,13 +1,23 @@
 import {Link} from 'react-router-dom'
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+//import { useHistory } from 'react-router-dom';
 import '../../global.css'
 
 import { Container, Row, Col, Form, InputGroup, FormControl, Button} from 'react-bootstrap';
 
 
-
-
 function Home(){
+
+    useEffect(() =>{
+      const token = localStorage.getItem('token');
+
+      if(!token){
+        alert('token nao existe');
+        window.location.href = "/login";
+      }
+    },[])
+
+  
     return(
       <>
       
